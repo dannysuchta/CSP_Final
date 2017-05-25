@@ -1,5 +1,0 @@
-CSP Final
-
-//Danny Suchta
-
-//Insert url where you forked a repository
