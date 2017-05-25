@@ -1,0 +1,95 @@
+import random
+
+class HangMan(object):
+    
+    # Hangman game
+    hang = []
+    hang.append(' +---+')
+    hang.append(' |   |')
+    hang.append('     |')
+    hang.append('     |')
+    hang.append('     |')
+    hang.append('     |')
+    hang.append('=======')
+                                #These lines 6-21 are the charecter depictions
+    man = {}
+    man[0] = [' 0   |']
+    man[1] = [' 0   |', ' |   |']
+    man[2] = [' 0   |', '/|   |']
+    man[3] = [' 0   |', '/|\\  |']
+    man[4] = [' 0   |', '/|\\  |', '/    |']
+    man[5] = [' 0   |', '/|\\  |', '/ \\  |']
+    
+    pics = [] #pics, duh
+    
+    words = '''ant baboon badger bat bear beaver camel cat clam cobra cougar coyote
+crow deer dog donkey duck eagle ferret fox frog goat goose hawk lion lizard llama
+mole monkey moose mouse mule newt otter owl panda parrot pigeon python rabbit ram
+rat raven rhino salmon seal shark sheep skunk sloth snake spider stork swan tiger
+toad trout turkey turtle weasel whale wolf wombat zebra'''.split() #Shown above is the given repository of words that would be used in this scenerio for the topic to guess.
+
+    infStr='_-*\'*-_-*\'*-_-*\'*-_-*\'*-_-*\'*-_-*\'*-_-*\'*-_-*\'*-_-*\'*-_-*\''
+  
+    def __init__(self, *args, **kwargs):
+        i, j = 2, 0
+        self.pics.append(self.hang[:])
+        for ls in self.man.values(): #There are several values for each mistake of the non correct letter or phrase
+            pic, j = self.hang[:], 0
+            for m in ls:
+                pic[i + j] = m
+                j += 1
+            self.pics.append(pic) # this shows those hangman depictions as seen earlier.
+
+    def pickWord(self):
+        return self.words[random.randint(0, len(self.words) - 1)] #comments from hangman himself
+    
+    def printPic(self, idx, wordLen):
+        for line in self.pics[idx]:
+            print(line)
+            
+    def askAndEvaluate(self, word, result, missed):
+        guess = input()
+        if guess == None or len(guess) != 1 or (guess in result) or (guess in missed):
+            return None, False   #In lines 50-57 it is the responsive piece of all of this code on how hangman will respond to either a correct input or false input
+        i = 0
+        right = guess in word
+        for c in word:
+            if c == guess: #Point system in for the type of response
+                result[i] = c
+            i += 1
+        return guess, right
+
+    def info(self, info):
+        ln=len(self.infStr)
+        print(self.infStr[:-3])
+        print(info)
+        print(self.infStr[3:])
+            
+    def start(self):
+        print('Welcome to Hangman !')
+        word = list(self.pickWord()) # Introduction of game, and the number of spaces given 
+        result = list('*' * len(word))
+        print('The word is: ', result) # This section prints the word in result of correct guesses and other successes
+        success, i, missed = False, 0, []
+        while i < len(self.pics)-1:
+            print('Guess the word') #Print 'guess the word'
+            guess,right = self.askAndEvaluate(word, result, missed)
+            if guess == None:
+                print('You\'ve already entered this character.')
+                continue
+            print(''.join(result)) #Lines 75-84 are the basic function response based on how you interact with it initially
+            if result == word:
+                self.info('Congratulations ! You\'ve just saved a life !') # a response only if you win
+                success = True
+                break
+            if not right:
+                missed.append(guess)
+                i+=1
+            self.printPic(i, len(word))
+            print('Missed characters: ', missed) #displays the wrong charecters choses
+        
+        if not success:
+            self.info('The word was \''+''.join(word)+'\' ! You\'ve just killed a man, yo !') #response to if you lose or not
+
+a = HangMan().start()
+
